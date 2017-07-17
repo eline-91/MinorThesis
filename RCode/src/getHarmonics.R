@@ -8,7 +8,7 @@
 # one of which contains the phases and amplitudes of the data.
 
 # Can be run via the command line, via for example:
-# --slave --no-restore --file=getHarmonics.R --args --start_date="2014-03-11" --end_date="2016-03-11"
+# R --slave --no-restore --file=getHarmonics.R --args --start_date="2014-03-11" --end_date="2016-03-11"
 
 library(probaV)
 library(tools)
