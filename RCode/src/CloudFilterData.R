@@ -94,3 +94,18 @@ c_vrt <- timeVrtProbaV(ProbaV_sm_dir, pattern = bands_sm, vrt_name = vrt_name, t
                        te = ext_testArea)
 #plot(c_vrt)
 dim(c_vrt)
+
+
+# --------- even smaller test extent
+b_vrt <- timeVrtProbaV(ProbaV_sm_dir, pattern = bands_sm, vrt_name = vrt_name, tile = tile[1], 
+                       return_raster = T, start_date = "2014-03-11", end_date = "2014-03-11")
+#plot(b_vrt)
+ext3 <- extent(b_vrt, 6115, 6164, 8550, 8599)
+ext3
+ext_testArea2 <- c(ext3[1],ext3[3],ext3[2],ext3[4])
+
+d_vrt <- timeVrtProbaV(ProbaV_sm_dir, pattern = bands_sm, vrt_name = vrt_name, tile = tile[1], 
+                       return_raster = T, start_date = "2014-03-11", end_date = "2014-03-11", 
+                       te = ext_testArea2)
+#plot(c_vrt)
+dim(d_vrt)
