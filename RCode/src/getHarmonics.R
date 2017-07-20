@@ -53,16 +53,16 @@ parser = add_option(parser, "--cores", type="integer", metavar="integer",
 #                                 rasterOptions()$tmpdir, ")"))
 args = parse_args(parser)
 
-get_harmonics <- function(inputDir=args[["inputDir"]], outputDir=args[["outputDir"]], tile=args[["tile"]], 
+get_harmonics = function(inputDir=args[["inputDir"]], outputDir=args[["outputDir"]], tile=args[["tile"]], 
                           start_date=args[["start_date"]], end_date=args[["end_date"]],
                           outputFileHarm=args[["filenameHarm"]], outputFilePA=args[["filenamePA"]],
                           logFile=args[["logFile"]], bandPattern=args[["bandPattern"]], order=args[["order"]],
                           tempDir=args[["tempDir"]], rowsPerThread=args[["rowsPerThread"]], cores=args[["cores"]], ...) {
   
-  filePath_harm <- paste0(outputDir, outputFileHarm)
-  filePath_pa <- paste0(outputDir, outputFilePA)
-  filePath_log <- paste0(outputDir, logFile)
-  filePath_vrt <- paste0(tempDir, "harmonics.vrt")
+  filePath_harm = paste0(outputDir, outputFileHarm)
+  filePath_pa = paste0(outputDir, outputFilePA)
+  filePath_log = paste0(outputDir, logFile)
+  filePath_vrt = paste0(tempDir, "harmonics.vrt")
   
   vrt = timeVrtProbaV(inputDir, pattern = bandPattern, vrt_name = filePath_vrt, tile = tile,
                       start_date = start_date, end_date = end_date, return_raster = TRUE, ...)
@@ -72,7 +72,7 @@ get_harmonics <- function(inputDir=args[["inputDir"]], outputDir=args[["outputDi
   
   if (!file.exists(filePath_harm)) {
     psnice(value = min(cores - 1, 19))
-    system.time(coeffs <- getHarmMetricsSpatial(vrt, ts, minrows = rowsPerThread, mc.cores = cores,
+    system.time(coeffs = getHarmMetricsSpatial(vrt, ts, minrows = rowsPerThread, mc.cores = cores,
                                                 logfile=filePath_log, overwrite=TRUE, filename = filePath_harm, 
                                                 order = order, datatype="FLT4S", progress="text"))
     } else {
@@ -103,7 +103,7 @@ get_harmonics <- function(inputDir=args[["inputDir"]], outputDir=args[["outputDi
   brick(finalStack, filename = filePath_pa, datatype = "FLT4S", overwrite = TRUE,
         progress = "text", options = c("COMPRESS=DEFLATE", "ZLEVEL=9", "NUMTHREADS=4"))
   
-  ls <- list("coefficients" = coeffs, "finalStack" = finalStack)
+  ls = list("coefficients" = coeffs, "finalStack" = finalStack)
   return(ls)
 }
 

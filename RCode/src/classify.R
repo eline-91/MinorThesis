@@ -11,11 +11,12 @@ library(probaV)
 library(raster)
 library(optparse)
 source("utils/SetTempPath.R")
+source("utils/loadData.R")
 
 # Command-line options
 parser = OptionParser()
 parser = add_option(parser, "--trainingData", type="character", 
-                    default="../../../userdata3/TrainingData/TotalTrainingData_080617.csv",
+                    default="../../../userdata3/TrainingData/TrainingData_variables.csv",
                     help="Path to training pixels csv file. (Default: %default)", metavar="path")
 parser = add_option(parser, "--metricData", type="character", metavar="path",
                     default="../../../userdata3/output/harmonics/phase_amplitude.tif",
@@ -28,37 +29,26 @@ parser = add_option(parser,"--outputName", type="character", metavar="filename",
 
 args = parse_args(parser)
 
-# For testing purposes
-trainingData <- "../../../userdata3/TrainingData/TotalTrainingData_080617.csv"
-metricData <- "../../../userdata3/output/harmonics/phase_amplitude.tif"
-
-
-classify_rf <- function(trainingData=args[["trainingData"]], metricData=args[["metricData"]], 
+classify_rf = function(trainingData=args[["trainingData"]], metricData=args[["metricData"]], 
                      outputDir=args[["outputDir"]], outputName=args[["outputName"]]) {
   
-  trainingPoints <- read.csv(trainingData, header = TRUE)
-  coordinates(trainingPoints) <- ~X+Y
-  projection(trainingPoints) <- '+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0'
+  outputFile = paste0(outputDir, outputName, ".rds")
   
-  trainingRasters <- brick(metricData)
+  if (!file.exists(outputFile)) {
+    df_model = load_trainingData(trainingData = trainingData)
   
-  df_train <- extract(trainingRasters, trainingPoints, cellnumbers=T, df=T)
-  df_train  <- na.exclude(df_train)
+    cc = complete.cases(df_model)
+    print(table(df_model$class.name[cc]))
   
-  df_ref <- trainingPoints@data[df_train$ID,]
-  df_model <- cbind(code=df_ref$class_code, df_train)
-  df_model <- cbind(lc=df_ref$class_name, df_model)
-  df_model$lc <- as.factor(df_model$lc)
+    rf = ranger(class.name ~ ., df_model[cc, -(c(1,3))], num.trees=500, write.forest=T,
+                probability = F, num.threads=10, verbose=T, importance = "impurity")
   
-  cc <- complete.cases(df_model)
-  print(table(df_model$lc[cc]))
-  
-  rf <- ranger(lc ~ ., df_model[cc, -(2:4)], num.trees=500, write.forest=T,
-               probability = F, num.threads=10, verbose=T, importance = "impurity")
-  
-  saveRDS(rf, paste0(outputDir, outputName, ".rds"))
-  
-  return(rf)
+    saveRDS(rf, outputFile)
+    return(rf)
+    
+  } else {
+    print(paste0(outputName, " already exists in this folder."))
+  }
 }
 
 classify_rf()
