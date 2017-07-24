@@ -13,8 +13,12 @@ get_reclassMatrix = function(){
   return(mat)
 }
 
-get_colorScheme = function() {
-  
-  
-  
+get_legend = function() {
+  legend=c("Bareland", "Cropland", "Forest", "Grassland", "Shrubland", "Urban", "Water")
+  return(legend)
+}
+
+get_colors = function() {
+  colors=c("khaki4", "gold", "darkgreen", "lawngreen", "purple", "red", "blue")
+  return(colors)
 }
