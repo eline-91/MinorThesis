@@ -10,7 +10,7 @@ load_groundData = function(filename = "../../../userdata3/TrainingData/TotalTrai
   return(data)
 }
 
-load_harmonicMetrics = function(filename = "../../../userdata3/output/harmonics/phase_amplitude.tif") {
+load_harmonicMetrics = function(filename = "../../../userdata3/output/harmonics/phase_amplitude.tif", only_mean=F) {
   # Function to load the harmonic metrics as a brick and clarify the band names.
   
   data = brick(filename)
@@ -19,6 +19,10 @@ load_harmonicMetrics = function(filename = "../../../userdata3/output/harmonics/
   } else {
     print(paste0("File contains unknown bands. Number of bands: ", data@file@nbands, 
                  ". Names of bands are left unchanged."))
+  }
+  
+  if(only_mean) {
+    return(data[[1]])
   }
   
   return(data)
