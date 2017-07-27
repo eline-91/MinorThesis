@@ -8,12 +8,16 @@
 # one of which contains the phases and amplitudes of the data.
 
 # Can be run via the command line, via for example:
-# R --slave --no-restore --file=getHarmonics.R --args --start_date="2014-03-11" --end_date="2016-03-11"
+# R --slave --no-restore --file=getHarmonics.R --args --start_date="2014-03-11" --end_date="2016-03-06"
+
+# Some parameters are fixed in utils/loadInfo.R, and should be changed there. Among these parameters are:
+# tile, band pattern, and temporary directory.
 
 library(probaV)
 library(tools)
 library(optparse)
 source("utils/SetTempPath.R")
+source("utils/loadInfo.R")
 
 # Command-line options
 parser = OptionParser()
@@ -22,8 +26,6 @@ parser = add_option(parser, "--inputDir", type="character", default="../../../us
 parser = add_option(parser, "--outputDir", type="character", metavar="path",
                     default="../../../userdata3/output/harmonics/",
                     help="Output directory. (Default: %default)")
-parser = add_option(parser, "--tile", type="character", metavar="tile index",
-                    default="X16Y06", help="Tile of interest to process. (Default: %default)")
 parser = add_option(parser,"--start_date", type="character", metavar="date", default = NULL,
                     help="Start date of the time series. Format: 'yyyy-mm-dd'.")
 parser = add_option(parser, "--end_date", type="character", metavar="date", default = NULL,
@@ -37,12 +39,8 @@ parser = add_option(parser, "--filenamePA", type="character", default="phase_amp
 parser = add_option(parser, "--logFile", type="character", default="get_harmonics.log",
                     help="Output filename of the log file. (Default: %default)", 
                     metavar="filename")
-parser = add_option(parser, "--bandPattern", type="character", metavar="regex", default = "NDVI_sm_ts.tif$",
-                    help="Pattern to select input files. (Default: %default)")
 parser = add_option(parser, "--order", type="integer", metavar="integer",
                     default=2, help="Order of the regression. Choose 1, 2 or 3. (Default: %default)")
-parser = add_option(parser, "--tempDir", type="character", default="../../../userdata3/tmp/",
-                    help="Temporary directory. (Default: %default)", metavar="path")
 parser = add_option(parser, "--rowsPerThread", type="integer", metavar="integer",
                     default=14, help="Number of rows to process per thread. (Default: %default)")
 parser = add_option(parser, "--cores", type="integer", metavar="integer",
@@ -53,11 +51,16 @@ parser = add_option(parser, "--cores", type="integer", metavar="integer",
 #                                 rasterOptions()$tmpdir, ")"))
 args = parse_args(parser)
 
-get_harmonics = function(inputDir=args[["inputDir"]], outputDir=args[["outputDir"]], tile=args[["tile"]], 
+get_harmonics = function(inputDir=args[["inputDir"]], outputDir=args[["outputDir"]], 
                           start_date=args[["start_date"]], end_date=args[["end_date"]],
                           outputFileHarm=args[["filenameHarm"]], outputFilePA=args[["filenamePA"]],
-                          logFile=args[["logFile"]], bandPattern=args[["bandPattern"]], order=args[["order"]],
-                          tempDir=args[["tempDir"]], rowsPerThread=args[["rowsPerThread"]], cores=args[["cores"]], ...) {
+                          logFile=args[["logFile"]], order=args[["order"]],
+                          rowsPerThread=args[["rowsPerThread"]], cores=args[["cores"]], ...) {
+  
+  bandPattern = get_bandPattern()
+  tile = get_tile()
+  tempDir = get_tempDir()
+  
   
   filePath_harm = paste0(outputDir, outputFileHarm)
   filePath_pa = paste0(outputDir, outputFilePA)
