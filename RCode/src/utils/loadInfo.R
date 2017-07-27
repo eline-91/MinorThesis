@@ -22,3 +22,18 @@ get_colors = function() {
   colors=c("khaki4", "gold", "darkgreen", "lawngreen", "purple", "red", "blue")
   return(colors)
 }
+
+get_bandPattern = function() {
+  bandPattern = "NDVI_sm_ts.tif$"
+  return(bandPattern)
+}
+
+get_tile = function() {
+  tile = "X16Y06"
+  return(tile)
+}
+
+get_tempDir = function() {
+  tempDir = "../../../userdata3/tmp/"
+  return(tempDir)
+}
