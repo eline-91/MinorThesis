@@ -29,11 +29,14 @@ parser = add_option(parser, "--outputDir", type="character", metavar="path",
 parser = add_option(parser, "--outputFilename", type="character", default="NDVI_pValues.tif",
                     help="Output filename of the tif file with the NDVI based p-values. (Default: %default)",
                     metavar="filename")
+parser = add_option(parser, "--cores", type="integer", metavar="integer",
+                    default=16, help="Number of cores to use. (Default: %default)")
 
 args = parse_args(parser)
 
 perform_ttests = function(NDVI_dir=args[["NDVI_Dir"]], metricData=args[["metricData"]], 
-                          outputDir=args[["outputDir"]], outputFilename=args[["outputFilename"]], ...) {
+                          outputDir=args[["outputDir"]], outputFilename=args[["outputFilename"]],
+                          cores=args[["cores"]], ...) {
   
   # For temporary timing purposes
   print(paste0("Start time: ", Sys.time()))
@@ -60,7 +63,12 @@ perform_ttests = function(NDVI_dir=args[["NDVI_Dir"]], metricData=args[["metricD
     return(NA)
   }
   
-  p.valueRaster = calc(t.stack, fun=t.tester)
+  beginCluster(cores, nice = min(cores - 1, 19))
+  p.valueRaster = clusterR(t.stack, calc, args=list(fun=t.tester), export='nlayers')
+  endCluster()
+  
+  # For temporary timing purposes
+  print(paste0("End time: ", Sys.time()))
   
   outName = paste0(outputDir, outputFilename)
   writeRaster(p.valueRaster, filename = outName)
