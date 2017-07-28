@@ -100,7 +100,9 @@ get_harmonics = function(inputDir=args[["inputDir"]], outputDir=args[["outputDir
   p2 = overlay(coeffs[[6]], coeffs[[7]], fun=phaser)
   a2 = overlay(coeffs[[6]], coeffs[[7]], fun=amplituder)
   
-  meanData = mean(vrt, na.rm=TRUE)
+  beginCluster(cores, nice = min(cores - 1, 19))
+  meanData = clusterR(vrt, calc, args=list(mean, na.rm=TRUE))
+  endCluster()
   
   finalStack = stack(meanData, p1, a1, p2, a2)
   brick(finalStack, filename = filePath_pa, datatype = "FLT4S", overwrite = TRUE,
