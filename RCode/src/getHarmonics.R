@@ -45,10 +45,7 @@ parser = add_option(parser, "--rowsPerThread", type="integer", metavar="integer"
                     default=14, help="Number of rows to process per thread. (Default: %default)")
 parser = add_option(parser, "--cores", type="integer", metavar="integer",
                     default=16, help="Number of cores to use. (Default: %default)")
-# sink("/dev/null") # Silence rasterOptions
-# parser = add_option(parser, c("-m", "--tempDir"), type="character", metavar="path",
-#                     help=paste0("Path to a temporary directory to store results in. (Default: ",
-#                                 rasterOptions()$tmpdir, ")"))
+
 args = parse_args(parser)
 
 get_harmonics = function(inputDir=args[["inputDir"]], outputDir=args[["outputDir"]], 
@@ -56,6 +53,7 @@ get_harmonics = function(inputDir=args[["inputDir"]], outputDir=args[["outputDir
                           outputFileHarm=args[["filenameHarm"]], outputFilePA=args[["filenamePA"]],
                           logFile=args[["logFile"]], order=args[["order"]],
                           rowsPerThread=args[["rowsPerThread"]], cores=args[["cores"]], ...) {
+  print(args)
   
   bandPattern = get_bandPattern()
   tile = get_tile()
@@ -75,7 +73,7 @@ get_harmonics = function(inputDir=args[["inputDir"]], outputDir=args[["outputDir
   
   if (!file.exists(filePath_harm)) {
     psnice(value = min(cores - 1, 19))
-    system.time(coeffs = getHarmMetricsSpatial(vrt, ts, minrows = rowsPerThread, mc.cores = cores,
+    system.time(coeffs <- getHarmMetricsSpatial(vrt, ts, minrows = rowsPerThread, mc.cores = cores,
                                                 logfile=filePath_log, overwrite=TRUE, filename = filePath_harm, 
                                                 order = order, datatype="FLT4S", progress="text"))
     } else {
