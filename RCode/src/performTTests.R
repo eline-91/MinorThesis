@@ -72,9 +72,7 @@ perform_ttests = function(NDVI_dir=args[["NDVI_Dir"]], metricData=args[["metricD
   
   outName = paste0(outputDir, outputFilename)
   writeRaster(p.valueRaster, filename = outName)
-
-  # For temporary timing purposes
-  print(paste0("End time: ", Sys.time()))
+  
   return(p.valueRaster)
 }
 
