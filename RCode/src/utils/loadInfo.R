@@ -13,6 +13,27 @@ get_reclassMatrix = function(){
   return(mat)
 }
 
+get_illogicalChanges = function() {
+  # Function that returns matrix which defines illogical changes
+  # 1 = illogical change
+  # 0 = possible change
+  
+  data = c(0,1,1,1,1,0,1,
+           0,0,0,0,0,0,1,
+           1,0,0,0,0,0,1,
+           1,1,0,0,0,0,1,
+           1,1,0,1,0,0,1,
+           1,1,0,0,0,0,0,
+           1,1,1,1,1,0,0)
+  rcNames = c(10,20,30,40,50,60,80)
+  
+  mat = matrix(data = data, nrow=7, ncol=7, byrow=T)
+  rownames(mat) = rcNames
+  colnames(mat) = rcNames
+  
+  return(mat)
+}
+
 get_legend = function() {
   legend=c("Bareland", "Cropland", "Forest", "Grassland", "Shrubland", "Urban", "Water")
   return(legend)
