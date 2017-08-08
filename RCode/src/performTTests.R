@@ -54,17 +54,18 @@ perform_ttests = function(NDVI_dir=args[["NDVI_Dir"]], metricData=args[["metricD
                       start_date = start_date, end_date = end_date, return_raster = TRUE, ...)
   
   t.stack = stack(mean.ndvi, vrt)
-  nlayers = length(t.stack@layers)
+  #nlayers = length(t.stack@layers)
   
   t.tester = function(x) {
-    try(answer <- t.test(x[2:nlayers], mu=x[1]), silent=TRUE)
-    if (exists("answer"))
+    try(answer <- t.test(x[2:length(x)], mu=x[1]), silent=TRUE)
+    if (exists("answer")) {
       return(answer$p.value)
+    }
     return(NA)
   }
   
   beginCluster(cores, nice = min(cores - 1, 19))
-  p.valueRaster = clusterR(t.stack, calc, args=list(fun=t.tester), export='nlayers')
+  p.valueRaster = clusterR(t.stack, calc, args=list(fun=t.tester))#, export='nlayers')
   endCluster()
   
   # For temporary timing purposes
