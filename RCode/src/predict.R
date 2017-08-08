@@ -54,7 +54,7 @@ predict_rf = function(rf_modelPath=args[["rf_modelPath"]], metricData=args[["met
   
   if (!file.exists(outputFile)) {
     print("Predicting...")
-    print(system.time(predicted = predict(metrics, rfmodel, fun=RP, num.threads=cores,
+    print(system.time(predicted <- predict(metrics, rfmodel, fun=RP, num.threads=cores,
                                           progress="text")))
     
     print("Reclassifying...")
