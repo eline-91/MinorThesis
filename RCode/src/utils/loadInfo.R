@@ -31,8 +31,7 @@ get_illogicalChanges = function() {
   return(mat)
 }
 
-# TODO: should become get_classes
-get_legend = function() {
+get_classes = function() {
   #legend=c("Bareland", "Cropland", "Forest", "Grassland", "Shrubland", "Urban", "Water")
   classes = info$classification$classes
   return(classes)
@@ -68,3 +67,30 @@ get_inputDir = function() {
   inputDir = info$folders$NDVI_images
   return(inputDir)
 }
+
+get_outputDir = function() {
+  outputDir = info$folders$outputDir
+  return(outputDir)
+}
+
+get_groundTruth = function () {
+  groundTruth = info$classification$ground_truth
+  return(groundTruth)
+}
+
+get_trainingData = function() {
+  trainingData = info$classification$training_variables
+  return(trainingData)
+}
+
+get_metrics = function(version = c("2y", "3y")) {
+  if (version == "2y") {
+    return(info$classification$metrics_2y)
+  } else if (version == "3y") {
+    return(info$classification$metrics_3y)
+  } else {
+    print("Version unknown. Choose between '2y' and '3y'.")
+  }
+}
+
+
