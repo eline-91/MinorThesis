@@ -13,21 +13,27 @@ folders:
     NDVI_images: "../../../userdata3/NDVI_images/"
     # Directory for temporary objects
     temp: "../../../userdata3/tmp/"
-
-# Information on the used filenames
-filenames:
-    #
+    # Directory for output files
+    outputDir: "../../../userdata3/output/"
 
 # Section for training and classification
 classification:
+    # Ground truth data
+    ground_truth: "../../../userdata3/TrainingData/TotalTrainingData_080617.csv"
     # Training data file
-    training_image: "../../../userdata3/TrainingData/TrainingData_variables.csv"
+    training_variables: "../../../userdata3/TrainingData/TrainingData_variables.csv"
+    # Harmonic metric data first two years (11-03-2014 -- 06-03-2016)
+    metrics_2y: "../../../userdata3/output/harmonics/phase_amplitude.tif"
+    # Harmonic metric data third year (11-03-2016 -- 06-03-2017)
+    metrics_3y: "../../../userdata3/output/harmonics/phase_amplitude_3y.tif"
     # Class names, must be in alphabetical order
     classes: [Bareland, Cropland, Forest, Grassland, Shrubland, Urban, Water]
     # Class codes, must correspond to the order of classes
     codes: [60, 40, 10, 30, 20, 50, 80]
     # Colors to assign to each class, order must correspond
     colors: [khaki4, gold, darkgreen, lawngreen, purple, red, blue]
+    # Filepath to accuracy statistics csv file of the basemap
+    accStats_basemap: "../../../userdata3/output/classification/accuracyStats_basemap.csv"
 
 # Information needed for change detection
 changeDetection:
