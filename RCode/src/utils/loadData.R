@@ -1,7 +1,9 @@
 # Script that contains functions to load data into functions.
+source("utils/loadInfo.R")
 
-load_groundData = function(filename = "../../../userdata3/TrainingData/TotalTrainingData_080617.csv") {
+load_groundData = function() {
   # Function to load the ground truth data as a SpatialPointsDataFrame.
+  filename = get_groundTruth()
   
   data = read.csv(filename)
   coordinates(data) = ~X+Y
@@ -33,7 +35,11 @@ load_trainingData = function(trainingData = "../../../userdata3/TrainingData/Tra
   # Function to load the training variables.
   # Option to return either a data frame (sp = FALSE, default) or a SpatialPointsDataFrame (sp = TRUE)
   
-  trainingVariables = load_groundData(trainingData)
+  filename = get_trainingData()
+  trainingVariables = read.csv(filename)
+  coordinates(trainingVariables) = ~X+Y
+  projection(trainingVariables) = "+proj=longlat +datum=WGS84 +no_defs"
+  
   trainingVariables$X.1=NULL
   trainingVariables$optional=NULL
   trainingVariables$id=NULL
