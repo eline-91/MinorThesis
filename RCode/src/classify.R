@@ -1,10 +1,11 @@
 #!/usr/bin/env Rscript
 
-# This script makes a random forest model based on harmonic metric data and a
-# point training dataset, and saves the rf model to disk as a .rds file.
+# This script makes a random forest model based on harmonic metric and elevation 
+# data and a point training dataset, and saves the rf model to disk as a .rds 
+# file.
 
 # Can be run via the command line, via for example:
-# R --slave --no-restore --file=classify.R --args --outputName="randomForest_date"
+# R --slave --no-restore --file=classify.R --args --cores=16
 
 library(ranger)
 library(probaV)
@@ -12,42 +13,37 @@ library(raster)
 library(optparse)
 source("utils/SetTempPath.R")
 source("utils/loadData.R")
+source("utils/loadInfo.R")
 
 # Command-line options
 parser = OptionParser()
-parser = add_option(parser, "--trainingData", type="character", 
-                    default="../../../userdata3/TrainingData/TrainingData_variables.csv",
-                    help="Path to training pixels csv file. (Default: %default)", metavar="path")
-parser = add_option(parser, "--metricData", type="character", metavar="path",
-                    default="../../../userdata3/output/harmonics/phase_amplitude.tif",
-                    help="Data of harmonic metrics (raster tiff file). (Default: %default)")
-parser = add_option(parser, "--outputDir", type="character", metavar="path", 
-                    default="../../../userdata3/output/models/", 
-                    help="Output directory to store random forest models. (Default: %default)")
-parser = add_option(parser,"--outputName", type="character", metavar="filename", default = "randomForest",
-                    help="Filename of the random forest model (no extension).")
-
+parser = add_option(parser, "--cores", type="integer", default=16,
+                    help="Number of cored to use. (Default: %default)", 
+                    metavar="integer")
 args = parse_args(parser)
 
-classify_rf = function(trainingData=args[["trainingData"]], metricData=args[["metricData"]], 
-                     outputDir=args[["outputDir"]], outputName=args[["outputName"]]) {
+classify_rf = function(cores=args[["cores"]]) {
   
-  outputFile = paste0(outputDir, outputName, ".rds")
+  outputFile = info$classification$rf_model
   
+  # Check if file already exists, if not make it
   if (!file.exists(outputFile)) {
-    df_model = load_trainingData(trainingData = trainingData)
-  
+    
+    # Load the training variables (from the csv file)
+    df_model = load_trainingData()
     cc = complete.cases(df_model)
     print(table(df_model$class.name[cc]))
   
-    rf = ranger(class.name ~ ., df_model[cc, -(c(1,3))], num.trees=500, write.forest=T,
-                probability = F, num.threads=10, verbose=T, importance = "impurity")
-  
+    rf = ranger(class.name ~ ., df_model[cc, -(c(1,3))], num.trees=500, 
+                write.forest=T, probability = F, num.threads=cores, verbose=T, 
+                importance = "impurity")
+    
+    # Save random forest model to file
     saveRDS(rf, outputFile)
     return(rf)
     
   } else {
-    print(paste0(outputName, " already exists in this folder."))
+    print(paste0(basename(outputFile), " already exists in this folder."))
   }
 }
 

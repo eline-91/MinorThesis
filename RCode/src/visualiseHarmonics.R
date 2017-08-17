@@ -37,7 +37,7 @@ tscurve("Urban", col="red", add=TRUE)
 tscurve("Water", col="blue", add=TRUE)
 par(xpd=TRUE)
 legend(13.5, 1, lty=1,
-       legend=get_classes(),
-       col=get_colors())
+       legend=info$classification$classes,
+       col=info$classification$colors)
 par(opar)
 dev.off()

@@ -26,6 +26,7 @@ parser = add_option(parser, "--folds", type="integer", default=5,
                     metavar="integer")
 args = parse_args(parser)
 
+# Function that calculates producer's accuracy based on the confusion matrix.
 calc_producersAcc = function(confMatrix) {
   accs = list()
   for (i in 1:dim(confMatrix)[1]) {
@@ -38,6 +39,7 @@ calc_producersAcc = function(confMatrix) {
   return(accs)
 }
 
+# Function that calculates user's accuracy based on the confusion matrix.
 calc_usersAcc = function(confMatrix) {
   accs = list()
   for (i in 1:dim(confMatrix)[1]) {
@@ -57,24 +59,28 @@ cross_validate = function(folds = args[["folds"]]) {
   predictions = data.frame(observed = validationData$class.name)
   predictions$predicted = NA
   
-  classes = get_classes()
+  classes = info$classification$classes
   predictions$predicted = factor(predictions$predicted, levels=c(seq(1,7)), 
                                  labels = classes)
   
+  # Repeat for each fold
   for (i in 1:length(folds)) {
-    # Make rf model
+    # Make an rf model for all data except the current fold
     rfmodel = ranger(class.name ~ ., validationData@data[-folds[[i]],], 
                      seed = 123456)
-    # Predict to remaining locations
+    
+    # Predict to the remaining locations
     rfprediction = predict(rfmodel, 
                            validationData@data[folds[[i]],])$predictions
     
     predictions$predicted[folds[[i]]] = rfprediction
   }
   
+  # Make the confusion matrix based on the observed and predicted values
   confusion = confusionMatrix(data = predictions$predicted, 
                               reference = predictions$observed)
   
+  # Calculate accuracies
   confusionTable = confusion$table
   prod_acc = calc_producersAcc(confusionTable)
   us_acc = calc_usersAcc(confusionTable)
@@ -84,18 +90,22 @@ cross_validate = function(folds = args[["folds"]]) {
   overall_acc = confusion$overall["Accuracy"]
   names(overall_acc) = "OverallAccuracy"
   
+  # Add accuracies to the table
   confusionTable = rbind(confusionTable, producersAccuracy = prod_acc)
   confusionTable = rbind(confusionTable, usersAccuracy = us_acc)
   confusionTable = rbind(confusionTable, omissionError = om_error)
   confusionTable = rbind(confusionTable, commissionError = com_error)
-
-  f = info$classification$accStats_basemap
   
+  # Get filename to save the accuracy information to
+  f = info$validation$accStats_basemap
+  
+  # Write the accuracy information to file
   write.csv(confusionTable, file = f)
   write.table(k, file = f, append = TRUE, sep=",", col.names = FALSE)
   write.table(overall_acc, file = f, append=TRUE, sep=",", col.names = FALSE)
   
-  print(paste0("Results written to: ", f))
+  print(paste0("Results written to: ", basename(f), " located in folder: ", 
+               dirname(f)))
   
   return(confusionTable)
 }

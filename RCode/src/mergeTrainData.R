@@ -5,9 +5,9 @@ source("utils/loadData.R")
 merge_data = function() {
   
   groundData = load_groundData()
-  metrics = load_harmonicMetrics()
+  rasters = load_trainingRasters(version="2y")
   
-  data = extract(metrics, groundData, method = "simple", cellnumbers=T, sp=T)
+  data = extract(rasters, groundData, method = "simple", cellnumbers=T, sp=T)
   print(anyNA(data@data))
   
   write.csv(data, "../../../userdata3/TrainingData/TrainingData_variables.csv")

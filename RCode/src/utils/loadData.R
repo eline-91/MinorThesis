@@ -3,7 +3,7 @@ source("utils/loadInfo.R")
 
 load_groundData = function() {
   # Function to load the ground truth data as a SpatialPointsDataFrame.
-  filename = get_groundTruth()
+  filename = info$classification$ground_truth
   
   data = read.csv(filename)
   coordinates(data) = ~X+Y
@@ -12,8 +12,9 @@ load_groundData = function() {
   return(data)
 }
 
-load_harmonicMetrics = function(filename = "../../../userdata3/output/harmonics/phase_amplitude.tif", only_mean=F) {
+load_harmonicMetrics = function(version=c("2y", "3y"), only_mean=F) {
   # Function to load the harmonic metrics as a brick and clarify the band names.
+  filename = get_metrics(version)
   
   data = brick(filename)
   if(data@file@nbands == 5) {
@@ -30,12 +31,20 @@ load_harmonicMetrics = function(filename = "../../../userdata3/output/harmonics/
   return(data)
 }
 
-load_trainingData = function(trainingData = "../../../userdata3/TrainingData/TrainingData_variables.csv",
-                             sp = FALSE) {
+load_demVariables = function() {
+  # Function to load the harmonic metrics as a brick and clarify the band names.
+  filename = info$classification$dem_variables
+  
+  data = brick(filename)
+  names(data) = c("height", "slope", "aspect", "tpi")
+  return(data)
+}
+
+load_trainingData = function(sp = FALSE) {
   # Function to load the training variables.
   # Option to return either a data frame (sp = FALSE, default) or a SpatialPointsDataFrame (sp = TRUE)
   
-  filename = get_trainingData()
+  filename = info$classification$training_variables
   trainingVariables = read.csv(filename)
   coordinates(trainingVariables) = ~X+Y
   projection(trainingVariables) = "+proj=longlat +datum=WGS84 +no_defs"
@@ -53,4 +62,12 @@ load_trainingData = function(trainingData = "../../../userdata3/TrainingData/Tra
     
     return(trainingVariables)
   }
+}
+
+load_trainingRasters = function(version=c("2y", "3y")) {
+  metrics = load_harmonicMetrics(version)
+  dems = load_demVariables()
+  
+  trainingRasters = stack(metrics, dems)
+  return(trainingRasters)
 }

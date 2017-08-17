@@ -6,6 +6,12 @@ dataset:
     tile: "X16Y06"
     # Band pattern to select the images
     bandPattern: "NDVI_sm_ts.tif$"
+    # start date and end date of the first two years (for basemap)
+    start_date: "2014-03-11"
+    end_date: "2016-03-06"
+    # Start date and end date of the third year (for updating)
+    start_3y: "2016-03-11"
+    end_3y: "2017-03-06"
 
 # Information on the used folders
 folders:
@@ -13,8 +19,6 @@ folders:
     NDVI_images: "../../../userdata3/NDVI_images/"
     # Directory for temporary objects
     temp: "../../../userdata3/tmp/"
-    # Directory for output files
-    outputDir: "../../../userdata3/output/"
 
 # Section for training and classification
 classification:
@@ -26,17 +30,27 @@ classification:
     metrics_2y: "../../../userdata3/output/harmonics/phase_amplitude.tif"
     # Harmonic metric data third year (11-03-2016 -- 06-03-2017)
     metrics_3y: "../../../userdata3/output/harmonics/phase_amplitude_3y.tif"
+    # Elevation data (height, slope, aspect, tpi)
+    dem_variables: "../../../userdata3/glsdem/pv_demVars.tif"
     # Class names, must be in alphabetical order
     classes: [Bareland, Cropland, Forest, Grassland, Shrubland, Urban, Water]
     # Class codes, must correspond to the order of classes
     codes: [60, 40, 10, 30, 20, 50, 80]
     # Colors to assign to each class, order must correspond
     colors: [khaki4, gold, darkgreen, lawngreen, purple, red, blue]
+    # Random Forest model used for classifying basemap
+    rf_model: "../../../userdata3/output/models/randomForest_16082017.rds"
+    # name of the predicted basemap
+    basemap: "../../../userdata3/output/predictions/Classification_March2014_March2016_rf16082017.tif"
+    
+validation:
     # Filepath to accuracy statistics csv file of the basemap
-    accStats_basemap: "../../../userdata3/output/classification/accuracyStats_basemap.csv"
+    accStats_basemap: "../../../userdata3/output/validation/accuracyStats_basemap.csv"
 
 # Information needed for change detection
 changeDetection:
+    # Output of the t-test: p-value raster
+    pvalue_raster: "../../../userdata3/output/changeDetection/NDVI_pValues.tif"
     # Illogical changes matrix (0 is logical change, 1 is illogical change)
     changeMatrix: [0,1,1,1,1,0,1,
                    0,0,0,0,0,0,1,
@@ -46,3 +60,5 @@ changeDetection:
                    1,1,0,0,0,0,0,
                    1,1,1,1,1,0,0]
     rcNames: [10,20,30,40,50,60,80]
+    # filename of the updated basemap
+    updated_basemap: "../../../userdata3/output/changeDetection/updated_basemap_17082017.tif"
