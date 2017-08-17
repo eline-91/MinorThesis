@@ -1,5 +1,5 @@
-# Cleans the ProbaV data from clouds and cloud shadows and saves the cleaned files in another location
-# To clean, it uses the mask provided with the data
+# Cleans the ProbaV data from clouds and cloud shadows and saves the cleaned 
+# files in another location. To clean, it uses the mask provided with the data.
 
 library(probaV)
 library(tools)

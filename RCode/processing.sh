@@ -1,6 +1,11 @@
 #!/bin/bash
 
 # Change directory to the location of the R folders and then run this file
+# Most parameters that are used in these functions can be edited in the 
+# configuration.yaml file.
+
+# This file takes very long to run, and is therefore meant more as documentation
+# on the order of the different scripts.
 
 # Fixed variables
 CORES=16

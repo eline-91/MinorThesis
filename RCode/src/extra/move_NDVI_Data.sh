@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This script is used to move NDVI PROBA-V data from one location to another, as
+# in the first location also the other PROBA-V data is located.
+
 # set path for output files here
 DIR_IN='/home/eline91/shared/userdata3/cleanFiles/'
 DIR_OUT='/home/eline91/shared/userdata3/NDVI_images'
