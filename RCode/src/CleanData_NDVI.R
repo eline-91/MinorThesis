@@ -25,7 +25,6 @@ for (dir in lf)
     imageDir = c(imageDir, paste0(dir,'/',lsf))
   }
 totalDirs = c(totalDirs, paste0(dataDir,'/',imageDir))
-#testDirs = totalDirs[1:3]
 
 # Processing all files for tile X16Y06
 processProbaVbatch(totalDirs, tiles = "X16Y06", QC_val = QC.vals, overwrite=FALSE,
