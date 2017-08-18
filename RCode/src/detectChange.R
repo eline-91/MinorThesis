@@ -70,7 +70,7 @@ process_changes = function(threshold=args[['threshold']], cores=args[['cores']])
   print(paste0("Updating basemap. Output: ", basename(outName_update)))
   
   updatedMap = update_basemap(basemap, predicted)
-  writeRaster(updatedMap, filename = outName_update, overwrite=TRUE)
+  writeRaster(updatedMap, filename = outName_update, datatype = "INT2S", overwrite=TRUE)
   
   return(updatedMap)
 }
