@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Change directory to the location of the R src folder and then run this file
+# Change directory to inside the R src folder and then run this file
 # Most parameters that are used in these functions can be edited in the 
 # configuration.yaml file.
 
