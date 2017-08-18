@@ -25,3 +25,6 @@ R --slave --no-restore --file=getDem.R
 # Step 5: merge training data with the all training rasters (harmonic metrics
 #         and DEM derivatives)
 R --slave --no-restore --file=mergeTrainData.R
+
+# Step 6 (optional): visualise the harmonic curves per class
+R --slave --no-restore --file=visualiseHarmonics.R
