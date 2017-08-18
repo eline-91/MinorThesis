@@ -1,6 +1,11 @@
-# Script to visualise the harmonic metrics
+# Script to visualise the harmonic metrics for the first two years
 # Largely based on code by Dainius Masiliunas:
 # https://github.com/GreatEmerald/master-classification/blob/master/src/validation/visualise-harmonics.r
+
+# Information taken from configuration file:
+# - training variables csv file
+# - classes
+# - colors corresponding to the classes
 
 source("utils/loadData.R")
 source("utils/loadInfo.R")
@@ -25,7 +30,7 @@ tscurve = function(classname, ...)
   curve(curvefunc, from=1, to=13, ylab="NDVI", xlab="Month", xaxp=c(1, 12, 11), ylim=c(-0.1, 1.1), ...)
 }
 
-pdf("../../../userdata3/output/thesisFigures/timeseries.pdf", width=7, height=4)
+pdf("../figures/timeseries_NDVI.pdf", width=7, height=4)
 opar = par()
 par(mar=c(5.1,4.1,1.1,8.1))
 tscurve("Cropland", col="gold")
