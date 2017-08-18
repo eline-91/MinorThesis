@@ -1,24 +1,31 @@
+# This file contains functions to guide the change detection process. They are
+# called from detectChange.R
+
 library(raster)
 library(ranger)
 library(tools)
 source("utils/loadInfo.R")
 source("utils/SetTempPath.R")
 
+# This function gives a value of 1 when the value of a pixel on the p value
+# raster has exceeded a certain threshold and gives the cell NA when it hasn't.
 detect_change = function(pvalueRaster, threshold, outputName) {
   changed = pvalueRaster
   values(changed)[values(changed) >= threshold] = NA
   values(changed)[is.na(values(changed)) == FALSE] = 1
   
-  if (!is.null(outputName)) {
-    writeRaster(changed, filename = outputName, overwrite=TRUE)
-  }
+  writeRaster(changed, filename = outputName, overwrite=TRUE)
   
   return(changed)
 }
 
-predict_changedPixels = function(metricData, changed_mask, rf_model, outputName, cores) {
+# This function performs the predictions on those pixels that are flagged as
+# changed and reclassifies them to the lc codes
+predict_changedPixels = function(trainRasters, changed_mask, rf_model, 
+                                 outputName, cores) {
+  
   # Load harmonic metrics of the third year
-  changed_harmonics = mask(metricData, changed_mask)
+  changed_rasters = mask(trainRasters, changed_mask)
   
   RP = function(...)
   {
@@ -29,8 +36,8 @@ predict_changedPixels = function(metricData, changed_mask, rf_model, outputName,
   
   if (!file.exists(outputName)) {
     print("Predicting...")
-    print(system.time(predicted <- predict(changed_harmonics, rf_model, fun=RP, num.threads=cores,
-                                          progress="text")))
+    print(system.time(predicted <- predict(changed_rasters, rf_model, fun=RP, 
+                                           num.threads=cores, progress="text")))
     
     # Print unique values of predicted raster
     print(paste0("Unique values of predicted: ", unique(predicted)))
@@ -42,14 +49,14 @@ predict_changedPixels = function(metricData, changed_mask, rf_model, outputName,
     return(reclass)
     
   } else {
-    print(paste0(outputName, " already exists in this folder. Loading ", outputName))
+    print(paste0(basename(outputName), " already exists in this folder. Loading ", 
+                 basename(outputName)))
     ras = raster(outputName)
     return(ras)
   }
 }
 
-
-update_basemap = function(basemap, predicted, cores) {
+update_basemap = function(basemap, predicted) {
   
   # For timing purposes
   print(paste0("Start time: ", Sys.time()))
@@ -57,6 +64,8 @@ update_basemap = function(basemap, predicted, cores) {
   b = brick(basemap, predicted)
   mat = get_illogicalChanges()
   
+  # Helper function that checks whether an illogical change has occured or not
+  # and makes a decision on which value to keep (basemap or predicted)
   checker = function(x) {
     
     # Situation 1: basemap is NA, predicted is not > change to predicted

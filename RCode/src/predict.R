@@ -1,14 +1,21 @@
 #!/usr/bin/env Rscript
 
-# This script takes a random forest model based on harmonic metric data and performs the
-# predictions, reclassifies the values to their proper lc codes, and 
-# writes the resulting raster as a tif file to disk.
+# This script takes a random forest model based on harmonic metric and elevation 
+# data andperforms the predictions, reclassifies the values to their proper lc 
+# codes and writes the resulting raster as a tif file to disk.
 
 # Function RP is taken from code made by Dainius Masiliunas:
 # https://github.com/GreatEmerald/master-classification/blob/master/src/classification/predict-rf.r
 
+# Information in configuration file:
+# - location of the harmonic metrics of the first two years
+# - location of the DEM variables
+# - location of the random forest model rds file
+# - the class codes
+# - output filename of the basemap
+
 # Can be run via the command line, via for example:
-# R --slave --no-restore --file=predict.R --args --rf_modelPath="../../../userdata3/output/models/randomForest_18072017_2.rds" --outputName="predictions_rf_date"
+# R --slave --no-restore --file=predict.R --args --cores=16
 
 library(ranger)
 library(tools)
@@ -20,28 +27,17 @@ source("utils/loadData.R")
 
 # Command-line options
 parser = OptionParser()
-parser = add_option(parser, "--rf_modelPath", type="character", 
-                    default=NULL,
-                    help="Path to random forest model rds file.", metavar="path")
-parser = add_option(parser, "--metricData", type="character", metavar="path",
-                    default="../../../userdata3/output/harmonics/phase_amplitude.tif",
-                    help="Data of harmonic metrics (raster tiff file). (Default: %default)")
-parser = add_option(parser, "--outputDir", type="character", metavar="path", 
-                    default="../../../userdata3/output/predictions/", 
-                    help="Output directory to store random forest model predictions. (Default: %default)")
-parser = add_option(parser,"--outputName", type="character", metavar="filename", default = NULL,
-                    help="Filename of the predicted raster (no extension).")
 parser = add_option(parser,"--cores", type="integer", metavar="integer", default=16,
                     help="Number of cores to use. (Default: %default)")
 
 args = parse_args(parser)
 
-predict_rf = function(rf_modelPath=args[["rf_modelPath"]], metricData=args[["metricData"]], 
-                       outputDir=args[["outputDir"]], outputName=args[["outputName"]], 
-                       cores=args[["cores"]]) {
+predict_rf = function(cores = args[["cores"]]) {
   
-  metrics = load_harmonicMetrics(metricData)
-  rfmodel = readRDS(rf_modelPath)
+  # Load the rasters used for training and predicting the basemap (harmonic 
+  # metrics and elevation data) and the random forest model
+  trainingRasters = load_trainingRasters(version="2y")
+  rfmodel = readRDS(info$classification$rf_model)
   
   RP = function(...)
   {
@@ -50,20 +46,26 @@ predict_rf = function(rf_modelPath=args[["rf_modelPath"]], metricData=args[["met
     return(rp$predictions)
   }
   
-  outputFile = paste0(outputDir, outputName, ".tif")
+  # Load output filepath from the configuration file.
+  outputFile = info$classification$basemap
   
+  # Check if output file exists
   if (!file.exists(outputFile)) {
     print("Predicting...")
-    print(system.time(predicted <- predict(metrics, rfmodel, fun=RP, num.threads=cores,
-                                          progress="text")))
     
+    # Record processing time while predicting, as it is a lengthy process
+    print(system.time(predicted <- predict(trainingRasters, rfmodel, fun=RP, 
+                                           num.threads=cores, progress="text")))
+    
+    # Reclassify the predicted raster to the proper lc codes, using the
+    # reclassification matrix from the configuration file
     print("Reclassifying...")
     mat = get_reclassMatrix()
     reclass = reclassify(x=predicted, rcl=mat, filename=outputFile)
     return(reclass)
     
   } else {
-    print(paste0(outputName, " already exists in this folder."))
+    print(paste0(basename(outputFile), " already exists in this folder."))
   }
 }
 

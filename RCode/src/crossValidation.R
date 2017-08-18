@@ -1,8 +1,12 @@
 #!/usr/bin/env Rscript
 
 # Script to perfom cross validation. Input is the number of folds. Other needed
-# data is taken from the configuration.yaml file. These are: training variables
-# (csv file), and filename of the output csv file with the accuracy statistics.
+# data is taken from the configuration.yaml file.
+
+# Information in configuration file:
+# - location of the training variables csv file
+# - used classes
+# - output location of the csv file containing accuracy statistics
 
 # Output is a csv file with the confusion matrix, and error statistics 
 # (producer's and user´s accuracy, errors of omission and commission, and kappa 

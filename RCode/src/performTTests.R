@@ -47,8 +47,7 @@ perform_ttests = function(cores=args[["cores"]], ...) {
   filePath_vrt = paste0(tempDir, "thirdYear.vrt")
   
   # Load mean NDVI of the first two years
-  #mean.ndvi.2y = load_harmonicMetrics("2y", only_mean = TRUE)
-  mean.ndvi.2y = load_harmonicMetrics("3y", only_mean = TRUE)
+  mean.ndvi.2y = load_harmonicMetrics("2y", only_mean = TRUE)
   
   # Create virtual raster brick of the third year
   vrt = timeVrtProbaV(NDVI_dir, pattern = bandPattern, vrt_name = filePath_vrt, 

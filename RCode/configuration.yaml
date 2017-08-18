@@ -23,9 +23,9 @@ folders:
 # Section for training and classification
 classification:
     # Ground truth data
-    ground_truth: "../../../userdata3/TrainingData/TotalTrainingData_080617.csv"
+    ground_truth: "../data/TotalTrainingData_080617.csv"
     # Training data file
-    training_variables: "../../../userdata3/TrainingData/TrainingData_variables.csv"
+    training_variables: "../data/TrainingData_variables.csv"
     # Harmonic metric data first two years (11-03-2014 -- 06-03-2016)
     metrics_2y: "../../../userdata3/output/harmonics/phase_amplitude.tif"
     # Harmonic metric data third year (11-03-2016 -- 06-03-2017)
@@ -39,13 +39,13 @@ classification:
     # Colors to assign to each class, order must correspond
     colors: [khaki4, gold, darkgreen, lawngreen, purple, red, blue]
     # Random Forest model used for classifying basemap
-    rf_model: "../../../userdata3/output/models/randomForest_16082017.rds"
+    rf_model: "../../../userdata3/output/models/randomForest_17082017.rds"
     # name of the predicted basemap
-    basemap: "../../../userdata3/output/predictions/Classification_March2014_March2016_rf16082017.tif"
+    basemap: "../../../userdata3/output/predictions/Classification_March2014_March2016_rf17082017.tif"
     
 validation:
     # Filepath to accuracy statistics csv file of the basemap
-    accStats_basemap: "../../../userdata3/output/validation/accuracyStats_basemap.csv"
+    accStats_basemap: "../data/accuracyStats_basemap.csv"
 
 # Information needed for change detection
 changeDetection:

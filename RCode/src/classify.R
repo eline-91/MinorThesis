@@ -4,6 +4,10 @@
 # data and a point training dataset, and saves the rf model to disk as a .rds 
 # file.
 
+# Information in configuration file:
+# - location of the training variables csv file
+# - output filename of the random forest model
+
 # Can be run via the command line, via for example:
 # R --slave --no-restore --file=classify.R --args --cores=16
 

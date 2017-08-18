@@ -8,7 +8,13 @@
 # Output is two multi-band files with harmonic coefficients, one of which 
 # contains the phases and amplitudes of the data.
 
-# Most parameters are taken from the configuration.yaml file.
+# Most parameters are taken from the configuration.yaml file:
+# - NDVI input directory
+# - band pattern and tile information
+# - temporary directory
+# - start and end date of the first two years as well as the second year (it
+#   depends on the version chosen which start and end dates are used)
+# - Filepath of the output raster containing the phases and amplitudes
 
 # Can be run via the command line, via for example:
 # R --slave --no-restore --file=getHarmonics.R --args --version="2y" --order=2 --rowsPerThread=14 --cores=16
@@ -24,7 +30,7 @@ parser = OptionParser()
 parser = add_option(parser, "--version", type="character", metavar="version",
                     default=NULL, help="Version to use, either the first two years ('2y'), or the third year ('3y').")
 parser = add_option(parser, "--order", type="integer", metavar="integer",
-                    default=2, help="Order of the regression. Choose 1, 2 or 3. (Default: %default)")
+                    default=2, help="Order of the regression. Choose 1, 2 or 3. Code has been tested only with order 2. (Default: %default)")
 parser = add_option(parser, "--rowsPerThread", type="integer", metavar="integer",
                     default=14, help="Number of rows to process per thread. (Default: %default)")
 parser = add_option(parser, "--cores", type="integer", metavar="integer",
@@ -118,6 +124,7 @@ get_harmonics = function(version=args[["version"]], order=args[["order"]],
         progress = "text", options = c("COMPRESS=DEFLATE", "ZLEVEL=9", 
                                        "NUMTHREADS=4"))
   
+  return(finalStack)
 }
 
 get_harmonics()

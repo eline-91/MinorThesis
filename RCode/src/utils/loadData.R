@@ -1,4 +1,6 @@
-# Script that contains functions to load data into functions.
+# Script that contains functions to load data into functions. If necessary,
+# information is taken from the configuration.yaml file.
+
 source("utils/loadInfo.R")
 
 load_groundData = function() {

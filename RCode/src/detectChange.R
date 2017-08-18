@@ -1,93 +1,76 @@
 #!/usr/bin/env Rscript
 
-# This script defines changed pixels, performs predictions on these pixels using the same
-# random forest model used to classify the basemap and updates the basemap.
-# Before updating, the algorithm checks whether illogical changes have occured. If so, 
-# the basemap value is maintained.
+# This script defines changed pixels, performs predictions on these pixels using 
+# the same random forest model as was used to classify the basemap and updates 
+# the basemap.Before updating, the algorithm checks whether illogical changes 
+# have occured. If so, the basemap value is maintained.
 
 # The result is a new classification, that is an update of the input basemap.
+# Besides this, other rasters containing data on changed pixels and predicted
+# pixels are written to the same folder.
+
+# Information and input taken from the configuration file:
+# - the p-value raster
+# - training rasters of the third year
+# - the random forest model used for the basemap
+# - the basemap needed to be updated
+# - the filename of the updated basemap
 
 # Can be run via the command line, via for example:
-# R --slave --no-restore --file=detectChange.R --args --pvalueRaster="../../../userdata3/output/changeDetection/NDVI_pValues.tif"
+# R --slave --no-restore --file=detectChange.R --args --threshold=0.05 --cores=16
 
 library(optparse)
 library(probaV)
 library(rgdal)
 library(raster)
+library(tools)
 source("changeDetectionFunctions.R")
 source("utils/loadData.R")
+source("utils/loadInfo.R")
 source("utils/SetTempPath.R")
 
 # Command-line options
 parser = OptionParser()
-parser = add_option(parser, "--pvalueRaster", type="character", 
-                    default="../../../userdata3/output/changeDetection/NDVI_pValues.tif",
-                    help="Filepath of the p value raster. (Default: %default)", metavar="path")
 parser = add_option(parser, "--threshold", type="double", metavar="number",
                     default=0.05,
                     help="Threshold to reject null hypothesis. (Default: %default)")
-parser = add_option(parser, "--metricData", type="character", metavar="path",
-                    default="../../../userdata3/output/harmonics/phase_amplitude_3y.tif",
-                    help="Data of harmonic metrics of the third year (raster tiff file). (Default: %default)")
-parser = add_option(parser, "--rf_model", type="character", 
-                    default="../../../userdata3/output/models/randomForest_03082017.rds",
-                    help="Path to random forest model rds file. (Default: %default)", metavar="path")
-parser = add_option(parser, "--basemap", type="character", metavar="path",
-                    default="../../../userdata3/output/predictions/predictions_rf_18072017_2_reclass.tif",
-                    help="Path of the basemap to be updated. (Default: %default)")
-parser = add_option(parser, "--outputDir", type="character", metavar="path",
-                    default="../../../userdata3/output/changeDetection/",
-                    help="Output directory. (Default: %default)")
-parser = add_option(parser, "--predictedFilename", type="character", default="predictions_changedPixels.tif",
-                    help="Output filename of the tif file with the predictions of the changed pixels. (Default: %default)",
-                    metavar="filename")
-parser = add_option(parser, "--updatedFilename", type="character", default="updated_map.tif",
-                    help="Output filename of the updated map. (Default: %default)",
-                    metavar="filename")
-parser = add_option(parser, "--changedFilename", type="character", default="changedPixels.tif",
-                    help="Output filename of the changed pixels file: no data is unchanged, 1 is changed. (Default: %default)",
-                    metavar="filename")
 parser = add_option(parser, "--cores", type="integer", metavar="integer",
                     default=16, help="Number of cores to use. (Default: %default)")
 
 args = parse_args(parser)
 
-define_filename = function (dir, fn) {
-  if (!is.null(fn)) {
-    return(paste0(dir, fn))
-  } else {
-    return(NULL)
-  }
-}
-
-process_changes = function(pvalueRaster=args[['pvalueRaster']], threshold=args[['threshold']], 
-                           metricData=args[['metricData']], rf_model=args[['rf_model']],
-                           basemap=args[['basemap']],
-                           outputDir=args[['outputDir']], predictedFilename=args[['predictedFilename']],
-                           updateFilename=args[['updatedFilename']],
-                           changedFilename=args[['changedFilename']], cores=args[['cores']]) {
+process_changes = function(threshold=args[['threshold']], cores=args[['cores']]) {
   
-  # Detect the change based on the result of the t tests.
-  outputChange = define_filename(outputDir, changedFilename)
+  # Get filename output and output directory
+  outName_update = info$changeDetection$updated_basemap
+  outDir = dirname(outName_update)
+  baseFN = file_path_sans_ext(basename(outName_update))
+  
+  # Step 1: detect the change based on the result of the t tests.
+  pvalueRaster = info$changeDetection$pvalue_raster  
+  outputChange = paste0(outDir, "/", baseFN, "_changedPix.tif")
+  
   pvalues = raster(pvalueRaster)
-  print(paste0("Detecting changed pixels. Output: ", changedFilename))
-  
+  print(paste0("Detecting changed pixels. Output: ", basename(outputChange)))
   changed = detect_change(pvalues, threshold, outputChange)
   
-  # Predict pixels that are defined as changed
-  outputPred = define_filename(outputDir, predictedFilename)
-  metrics = load_harmonicMetrics(metricData)
-  rf = readRDS(rf_model)
-  print(paste0("Predicting changed pixels. Output: ", predictedFilename))
+  # Step 2: predict those pixels that are defined as changed
+  outputPred = paste0(outDir, "/", baseFN, "_predictedPix.tif")
+  # Load the training rasters belonging to the third year of data
+  trainRasters = load_trainingRasters("3y")
+  rf = readRDS(info$classification$rf_model)
   
-  predicted = predict_changedPixels(metrics, changed, rf, outputPred, cores)
+  print(paste0("Predicting changed pixels. Output: ", basename(outputPred)))
+  predicted = predict_changedPixels(trainRasters, changed, rf, outputPred, 
+                                    cores)
   
-  # Update basemap, checking for illogical changes
-  bmap = raster(basemap)
-  print(paste0("Updating basemap. Output: ", updateFilename))
+  # Step 3: update basemap, checking for illogical changes
+  basemap = raster(info$classification$basemap)
   
-  updatedMap = update_basemap(bmap, predicted, cores)
-  writeRaster(updatedMap, paste0(outputDir, updateFilename), overwrite=TRUE)
+  print(paste0("Updating basemap. Output: ", basename(outName_update)))
+  
+  updatedMap = update_basemap(basemap, predicted)
+  writeRaster(updatedMap, filename = outName_update, overwrite=TRUE)
   
   return(updatedMap)
 }
