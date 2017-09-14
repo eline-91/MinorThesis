@@ -30,6 +30,10 @@ classification:
     metrics_2y: "../../../userdata3/output/harmonics/phase_amplitude.tif"
     # Harmonic metric data third year (11-03-2016 -- 06-03-2017)
     metrics_3y: "../../../userdata3/output/harmonics/phase_amplitude_3y.tif"
+    # Minimum-maximum data first two years (11-03-2014 -- 06-03-2016)
+    minmax_2y: "../../../userdata3/output/indices/min_max.tif"
+    # Minimum-maximum data third year (11-03-2016 -- 06-03-2017)
+    minmax_3y: "../../../userdata3/output/indices/min_max_3y.tif"
     # Elevation data (height, slope, aspect, tpi)
     dem_variables: "../../../userdata3/glsdem/pv_demVars.tif"
     # Class names, must be in alphabetical order

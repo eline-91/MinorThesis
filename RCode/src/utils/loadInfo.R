@@ -40,3 +40,13 @@ get_metrics = function(version = c("2y", "3y")) {
     print("Version unknown. Choose between '2y' and '3y'.")
   }
 }
+
+get_minmax = function(version = c("2y", "3y")) {
+  if (version == "2y") {
+    return(info$classification$minmax_2y)
+  } else if (version == "3y") {
+    return(info$classification$minmax_3y)
+  } else {
+    print("Version unknown. Choose between '2y' and '3y'.")
+  }
+}

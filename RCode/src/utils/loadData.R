@@ -42,6 +42,15 @@ load_demVariables = function() {
   return(data)
 }
 
+load_minmax = function(version=c("2y", "3y")) {
+  # Function to load the harmonic metrics as a brick and clarify the band names.
+  filename = get_minmax(version)
+  data = brick(filename)
+  
+  names(data) = c("min", "max")
+  return(data)
+}
+
 load_trainingData = function(sp = FALSE) {
   # Function to load the training variables.
   # Option to return either a data frame (sp = FALSE, default) or a SpatialPointsDataFrame (sp = TRUE)
@@ -68,8 +77,9 @@ load_trainingData = function(sp = FALSE) {
 
 load_trainingRasters = function(version=c("2y", "3y")) {
   metrics = load_harmonicMetrics(version)
+  minmax = load_minmax(version)
   dems = load_demVariables()
   
-  trainingRasters = stack(metrics, dems)
+  trainingRasters = stack(metrics, minmax, dems)
   return(trainingRasters)
 }
