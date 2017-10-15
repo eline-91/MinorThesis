@@ -1,8 +1,8 @@
 #!/usr/bin/env Rscript
 
-# This script makes a random forest model based on harmonic metric and elevation 
-# data and a point training dataset, and saves the rf model to disk as a .rds 
-# file.
+# This script makes a random forest model based on harmonic metrics, median min
+# max data, and elevation data and a point training dataset, and saves the rf 
+# model to disk as a .rds file.
 
 # Information in configuration file:
 # - location of the training variables csv file
