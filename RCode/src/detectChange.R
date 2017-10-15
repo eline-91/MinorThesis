@@ -21,6 +21,7 @@
 # - the basemap needed to be updated
 # - the filename of the updated basemap
 # - the filename of the textfile with some statistics
+# - the unique changes matrix
 
 # Can be run via the command line, via for example:
 # R --slave --no-restore --file=detectChange.R --args --threshold=0.05 --cores=16
