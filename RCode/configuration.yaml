@@ -17,8 +17,12 @@ dataset:
 folders:
     # Input directory of the images
     NDVI_images: "../../../userdata3/NDVI_images/"
+    # Input directory of integer NDVI images
+    NDVI_int: "../../../userdata3/NDVI_images_int/"
     # Directory for temporary objects
     temp: "../../../userdata3/tmp/"
+    # Directory of the MODIS mosaics
+    mod: "../../../userdata3/MODIS/"
 
 # Section for training and classification
 classification:
@@ -43,19 +47,19 @@ classification:
     # Colors to assign to each class, order must correspond
     colors: [khaki4, gold, darkgreen, lawngreen, purple, red, blue]
     # Random Forest model used for classifying basemap
-    rf_model: "../../../userdata3/output/models/randomForest_17082017.rds"
+    rf_model: "../../../userdata3/output/models/randomForest_25092017.rds"
     # name of the predicted basemap
-    basemap: "../../../userdata3/output/predictions/Classification_March2014_March2016_rf17082017.tif"
+    basemap: "../../../userdata3/output/predictions/Classification_March2014_March2016_rf25092017.tif"
     
 validation:
     # Filepath to accuracy statistics csv file of the basemap
-    accStats_basemap: "../data/accuracyStats_basemap.csv"
+    accStats_basemap: "../data/accuracyStats_basemap_25092017.csv"
 
 # Information needed for change detection
 changeDetection:
     # Output of the t-test: p-value raster
-    pvalue_raster: "../../../userdata3/output/changeDetection/NDVI_pValues.tif"
-    # Illogical changes matrix (0 is logical change, 1 is illogical change)
+    pvalue_raster: "../../../userdata3/output/changeDetection/NDVI_pValues_25092017.tif"
+    # Logical changes matrix (0 is logical change, 1 is illogical change)
     changeMatrix: [0,1,1,1,1,0,1,
                    0,0,0,0,0,0,1,
                    1,0,0,0,0,0,1,
@@ -64,5 +68,21 @@ changeDetection:
                    1,1,0,0,0,0,0,
                    1,1,1,1,1,0,0]
     rcNames: [10,20,30,40,50,60,80]
+    uniqueChanges: [1,2,3,4,5,6,7,
+                   8,9,10,11,12,13,14,
+                   15,16,17,18,19,20,21,
+                   22,23,24,25,26,27,28,
+                   29,30,31,32,33,34,35,
+                   36,37,38,39,40,41,42,
+                   43,44,45,46,47,48,49]
     # filename of the updated basemap
-    updated_basemap: "../../../userdata3/output/changeDetection/updated_basemap_17082017.tif"
+    updated_basemap: "../../../userdata3/output/changeDetection/updated_basemap_25092017_a99.tif"
+    # Scheme to harmonize classes in MODIS land cover maps
+    modis_scheme: [-1, 0, 80,
+                   0, 5, 10,
+                   5, 7, 20,
+                   7, 9, 10,
+                   9, 10, 30,
+                   11, 12, 40,
+                   12, 13, 50,
+                   15, 16, 60]
