@@ -24,8 +24,11 @@ R --slave --no-restore --file=crossValidation.R --args --folds=5
 # Step 4: calculate harmonic metrics of the third year
 R --slave --no-restore --file=getHarmonics.R --args --version="3y" --order=2 --rowsPerThread=14 --cores=$CORES
 
-# Step 5: perform t-test to compare third year with first two years
+# Step 5: calculate median min-max for the third year
+R --slave --no-restore --file=calc_minmax_indices.R --args --version="3y" --cores=16
+
+# Step 6: perform t-test to compare third year with first two years
 R --slave --no-restore --file=performTTests.R --args --cores=$CORES
 
-# Step 6: detect change, and update basemap 
+# Step 7: detect change, and update basemap 
 R --slave --no-restore --file=detectChange.R --args --threshold=0.05 --cores=$CORES

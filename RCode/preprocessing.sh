@@ -22,9 +22,12 @@ R --slave --no-restore --file=getHarmonics.R --args --version="2y" --order=2 --r
 # Step 4: download and preprocess the DEM, and calculate DEM derivatives
 R --slave --no-restore --file=getDem.R
 
-# Step 5: merge training data with the all training rasters (harmonic metrics
+# Step 5: calculate median min-max for the first two years of data
+R --slave --no-restore --file=calc_minmax_indices.R --args --version="2y" --cores=16
+
+# Step 6: merge training data with the all training rasters (harmonic metrics
 #         and DEM derivatives)
 R --slave --no-restore --file=mergeTrainData.R
 
-# Step 6 (optional): visualise the harmonic curves per class
+# Step 7 (optional): visualise the harmonic curves per class
 R --slave --no-restore --file=visualiseHarmonics.R
