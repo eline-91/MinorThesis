@@ -7,8 +7,8 @@
 library(R.utils)
 library(landsat)
 library(raster)
-source("utils/raster_utils.R")
-source("utils/dem_statistics.R")
+source("utils/rasterUtils.R")
+source("utils/demStatistics.R")
 
 # Set directory and specify tiles covering the study area
 GLSDir = "../../../userdata3/glsdem"
