@@ -23,6 +23,8 @@ folders:
     temp: "../../../userdata3/tmp/"
     # Directory of the MODIS mosaics
     mod: "../../../userdata3/MODIS/"
+    # Directory of the area C files
+    areaC: "../../../userdata3/AreaC/"
 
 # Section for training and classification
 classification:
@@ -86,3 +88,9 @@ changeDetection:
                    11, 12, 40,
                    12, 13, 50,
                    15, 16, 60]
+    # Filename of the absolute averaged npphen output
+    npphen_averaged: "../../../userdata3/output/changeDetection/anomaly_averaged.tif"
+    # npphen threshold level
+    npphen_threshold: 0.55
+    # npphen final change results
+    npphen_change: "../../../userdata3/output/changeDetection/npphen_change.tif"

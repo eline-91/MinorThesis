@@ -7,10 +7,10 @@ library(tools)
 source("utils/loadInfo.R")
 source("utils/SetTempPath.R")
 
-# This function gives a value of 1 when the value of a pixel on the p value
+# This function gives a value of 1 when the value of a pixel on a value
 # raster has exceeded a certain threshold and gives the cell NA when it hasn't.
-detect_change = function(pvalueRaster, threshold, outputName) {
-  changed = pvalueRaster
+detect_change = function(raster, threshold, outputName) {
+  changed = raster
   values(changed)[values(changed) >= threshold] = NA
   values(changed)[is.na(values(changed)) == FALSE] = 1
   
