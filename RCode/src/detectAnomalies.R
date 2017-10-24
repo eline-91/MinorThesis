@@ -64,32 +64,14 @@ if (!file.exists(output_npphen)) {
 } else {
   print(paste0(basename(output_npphen), " already exists in this folder. Loading ", 
                basename(output_npphen)))
-  totMap = raster(output_npphen)
+  totMap = brick(output_npphen)
 }
 
 # Average the absolute anomaly values and write to raster
 if (!file.exists(output_averaged)) {
   print(paste0("Computing the average, output: ", output_averaged))
   
-  # Helper function to get absolute values and take the mean
-  averager = function(x) {
-    a = mean(abs(x), na.rm=T)
-    return(a)
-  }
-  
-  # For timing purposes
-  print(paste0("Start time: ", Sys.time()))
-  
-  # Allow to process this on multiple cores
-  beginCluster(mc.cores, nice = min(mc.cores - 1, 19))
-  start = Sys.time()
-  averaged = clusterR(series, calc, args=list(fun=averager))
-  endCluster()
-  
-  # For timing purposes
-  end = Sys.time()
-  print(paste0("End time: ", Sys.time()))
-  print(end-start)
+  averaged = mean(abs(totMap), na.rm=T)
   
   writeRaster(averaged, filename = output_averaged, progress="text")
   
@@ -111,5 +93,7 @@ detect_npphen_change = function(raster, threshold, outputName) {
 # Use the averaged raster to select changed pixels based on a threshold
 npphen_threshold = info$changeDetection$npphen_threshold
 npphen_result = info$changeDetection$npphen_change
+print(paste0("Using a threshold of ", npphen_threshold, ", change is detected and saved to: ",
+             npphen_result))
 npphen_changed = detect_npphen_change(raster = averaged, threshold = npphen_threshold,
                               outputName = npphen_result)

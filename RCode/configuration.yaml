@@ -91,6 +91,6 @@ changeDetection:
     # Filename of the absolute averaged npphen output
     npphen_averaged: "../../../userdata3/output/changeDetection/anomaly_averaged.tif"
     # npphen threshold level
-    npphen_threshold: 0.55
+    npphen_threshold: 0.15
     # npphen final change results
     npphen_change: "../../../userdata3/output/changeDetection/npphen_change.tif"
